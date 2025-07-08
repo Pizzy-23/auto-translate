@@ -1,0 +1,17 @@
+{
+  "name": "auto-translate-app",
+  "version": "1.0.0",
+  "description": "Aplicativo de tradução de tela",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "concurrently \"cd ../backend && python app.py\" \"npm start\""
+  },
+  "keywords": [],
+  "author": "Seu Nome",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "electron": "^28.2.3"
+  }
+}

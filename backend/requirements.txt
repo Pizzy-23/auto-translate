@@ -1,0 +1,8 @@
+Flask
+Flask-CORS
+pywin32
+mss
+googletrans==4.0.0-rc1
+pillow
+numpy
+pytesseract
