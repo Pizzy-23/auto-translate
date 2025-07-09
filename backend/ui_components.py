@@ -31,15 +31,22 @@ class AreaSelector(tk.Toplevel):
         self.destroy()
 
 class OverlayWindow(tk.Toplevel):
-    def __init__(self, master, style_key='dark'):
+    def __init__(self, master, style_key='dark', duration_ms=4000):
         super().__init__(master)
         style = THEME_STYLES.get(style_key, THEME_STYLES['dark'])
         self.overrideredirect(True)
         self.wm_attributes("-topmost", True); self.wm_attributes("-disabled", True)
         self.wm_attributes("-transparentcolor", "white"); self.configure(bg='white')
-        self.label = tk.Label(self, text="", font=('Arial', '18', 'bold'), 
-                              fg=style['fg'], bg=style['bg'], wraplength=800, justify="left")
-        self.label.pack(padx=10, pady=5); self.withdraw()
+        
+        self.label = tk.Label(self, text="", font=('Arial', 18, 'bold'), 
+                              fg=style['fg'], bg=style['bg'], 
+                              wraplength=800, justify="left")
+        self.label.pack(padx=10, pady=5)
+        self.withdraw()
+        # Agenda a autodestruição da janela principal (root)
+        self.after(duration_ms, self.master.destroy)
+
     def show(self, text, x, y):
         self.label.config(text=text)
-        self.geometry(f"+{int(x-10)}+{int(y-10)}"); self.deiconify()
+        self.geometry(f"+{int(x-10)}+{int(y-10)}")
+        self.deiconify()

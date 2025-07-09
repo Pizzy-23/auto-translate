@@ -1,17 +1,18 @@
 {
-  "name": "auto-translate-app",
+  "name": "electron-app",
   "version": "1.0.0",
   "description": "Aplicativo de tradução de tela",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dev": "concurrently \"cd ../backend && python app.py\" \"npm start\""
+    "start:dev": "electron . --dev"
   },
   "keywords": [],
-  "author": "Seu Nome",
+  "author": "Fizzy",
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "electron": "^28.2.3"
+    "electron": "^28.2.3",
+    "electron-reloader": "^1.2.3"
   }
 }

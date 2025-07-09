@@ -1,6 +1,18 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
 
+const isDev = process.argv.includes("--dev");
+
+if (isDev) {
+  try {
+    require("electron-reloader")(module, {
+      ignore: [path.join(__dirname, "..", "node_modules"), "..\\.git"],
+    });
+  } catch (_) {
+    console.log("Error: electron-reloader não pôde ser carregado.");
+  }
+}
+
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 800,
@@ -13,6 +25,10 @@ function createWindow() {
   });
 
   mainWindow.loadFile("index.html");
+
+  if (isDev) {
+    mainWindow.webContents.openDevTools();
+  }
 }
 
 app.whenReady().then(() => {
