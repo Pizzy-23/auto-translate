@@ -3,25 +3,76 @@ export const uiManager = {
 
   init() {
     this.elements = {
-      originalTextArea: document.getElementById("original-text"),
-      translatedTextArea: document.getElementById("translated-text"),
-      logsDiv: document.getElementById("logs-div"),
-      themeSelect: document.getElementById("theme-select"),
-      views: document.querySelectorAll(".view"),
       navTranslateBtn: document.getElementById("nav-translation-btn"),
       navSettingsBtn: document.getElementById("nav-settings-btn"),
       actionTranslateBtn: document.getElementById("action-translate-btn"),
+      originalColumn: document.getElementById("original-column"),
+      translatedColumn: document.getElementById("translated-column"),
+      originalTextArea: document.getElementById("original-text"),
+      translatedTextArea: document.getElementById("translated-text"),
+      resultContainer: document.querySelector(".result-container"),
+      visibilityCheckboxes: document.querySelectorAll(
+        '.visibility-controls input[type="checkbox"]'
+      ),
+      debuggerToggle: document.getElementById("debugger-toggle"),
+      debuggerSection: document.getElementById("debugger-section"),
+      views: document.querySelectorAll(".view"),
+      themeSelect: document.getElementById("theme-select"),
+      logsDiv: document.getElementById("logs-div"),
     };
     for (const key in this.elements) {
-      if (!this.elements[key])
-        throw new Error(`[UI Manager] Elemento não encontrado: #${key}`);
+      if (
+        !this.elements[key] ||
+        (this.elements[key] instanceof NodeList &&
+          this.elements[key].length === 0)
+      ) {
+        throw new Error(`[UI Manager] Elemento da UI não encontrado: '${key}'`);
+      }
     }
+    this.addEventListeners();
+    this.updateResultLayout(); // Garante o estado inicial correto das colunas
+  },
+
+  addEventListeners() {
+    this.elements.navTranslateBtn.addEventListener("click", () =>
+      this.switchView("translation-view")
+    );
+    this.elements.navSettingsBtn.addEventListener("click", () =>
+      this.switchView("settings-view")
+    );
+
+    this.elements.visibilityCheckboxes.forEach((checkbox) => {
+      checkbox.addEventListener("change", () => this.updateResultLayout());
+    });
+
+    this.elements.debuggerToggle.addEventListener("change", (e) => {
+      this.elements.debuggerSection.classList.toggle(
+        "hidden",
+        !e.target.checked
+      );
+    });
+  },
+
+  updateResultLayout() {
+    let visibleColumns = 0;
+    this.elements.visibilityCheckboxes.forEach((checkbox) => {
+      const column = document.getElementById(checkbox.dataset.target);
+      if (column) {
+        const shouldBeHidden = !checkbox.checked;
+        column.classList.toggle("hidden", shouldBeHidden);
+        if (!shouldBeHidden) visibleColumns++;
+      }
+    });
+    this.elements.resultContainer.classList.toggle(
+      "two-columns",
+      visibleColumns === 2
+    );
   },
 
   switchView(viewId) {
     this.elements.views.forEach((view) => (view.style.display = "none"));
-    document.getElementById(viewId).style.display = "flex";
-
+    const viewToShow = document.getElementById(viewId);
+    if (viewToShow) viewToShow.style.display = "flex";
     document.querySelectorAll(".sidebar-btn").forEach((btn) => {
       btn.classList.toggle("active", btn.id === `nav-${viewId}-btn`);
     });
@@ -35,12 +86,15 @@ export const uiManager = {
   },
 
   getCurrentOptions() {
+    const translationMode = document.querySelector(
+      'input[name="translation-mode"]:checked'
+    ).value;
+    const outputMode = document.querySelector(
+      'input[name="output-mode"]:checked'
+    ).value;
     return {
-      translationMode: document.querySelector(
-        'input[name="translation-mode"]:checked'
-      ).value,
-      outputMode: document.querySelector('input[name="output-mode"]:checked')
-        .value,
+      translationMode,
+      outputMode,
       styleKey: this.elements.themeSelect.value,
     };
   },

@@ -25,22 +25,24 @@
             <div id="translation-view" class="view">
                 <h2>Tradução por Área</h2>
                 <button id="action-translate-btn" class="main-action-btn">Iniciar Tradução</button>
+                <div class="visibility-controls">
+                    <label><input type="checkbox" data-target="original-column" checked> Mostrar Original</label>
+                    <label><input type="checkbox" data-target="translated-column" checked> Mostrar Tradução</label>
+                </div>
                 <div class="result-container">
-                    <div id="original-column" class="text-column">
-                        <textarea id="original-text" readonly placeholder="Original..."></textarea>
-                    </div>
-                    <div id="translated-column" class="text-column">
-                        <textarea id="translated-text" readonly placeholder="Tradução..."></textarea>
-                    </div>
+                    <div id="original-column" class="text-column"><textarea id="original-text" readonly placeholder="Original..."></textarea></div>
+                    <div id="translated-column" class="text-column"><textarea id="translated-text" readonly placeholder="Tradução..."></textarea></div>
                 </div>
             </div>
             <div id="settings-view" class="view">
                 <h2>Configurações</h2>
                 <div class="settings-grid">
-                    <div class="option-item"><label>Modo:</label><div class="radio-group"><label><input type="radio" name="translation-mode" value="single" checked> Vez Única</label><label><input type="radio" name="translation-mode" value="realtime"> Tempo Real</label></div></div>
-                    <div class="option-item"><label>Exibir:</label><div class="radio-group"><label><input type="radio" name="output-mode" value="app" checked> No App</label><label><input type="radio" name="output-mode" value="overlay"> Overlay</label></div></div>
+                    <div class="option-item"><label>Modo de Tradução:</label><div class="radio-group"><label><input type="radio" name="translation-mode" value="single" checked> Vez Única</label><label><input type="radio" name="translation-mode" value="realtime"> Tempo Real</label></div></div>
+                    <div class="option-item"><label>Exibir resultado em:</label><div class="radio-group"><label><input type="radio" name="output-mode" value="app" checked> No App</label><label><input type="radio" name="output-mode" value="overlay"> Overlay</label></div></div>
                     <div class="option-item"><label for="theme-select">Tema:</label><select id="theme-select"></select></div>
                 </div>
+                <hr>
+                <div class="option-item"><label><input type="checkbox" id="debugger-toggle" checked> Mostrar Debugger</label></div>
             </div>
             <div id="debugger-section" class="debugger-section"><h3>Debugger</h3><div id="logs-div" class="logs-box"></div></div>
         </main>
