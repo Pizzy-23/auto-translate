@@ -6,7 +6,7 @@
     "scripts": {
         "start": "npm run dev",
         "dev": "concurrently \"npm:start:backend\" \"npm:start:frontend\"",
-        "start:backend": "cd backend && python app.py",
+        "start:backend": "cd backend && .\\venv\\Scripts\\python.exe app.py",
         "start:frontend": "cd electron-app && npm run start:dev",
         "build": "cd electron-app && npm run build",
         "install:all": "npm install && cd electron-app && npm install"

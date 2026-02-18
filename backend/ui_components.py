@@ -25,8 +25,7 @@ def tk_thread_worker(root, q):
                     result_container['result'] = selector.rect
                 elif action == 'show_overlay':
                     text, x, y, style_key = args
-                    overlay = OverlayWindow(root, style_key=style_key)
-                    overlay.show(text, x, y)
+                    OverlayWindow(root, style_key=style_key).show(text, x, y)
                 
                 if response_event:
                     response_event.set()
@@ -34,7 +33,6 @@ def tk_thread_worker(root, q):
                 q.task_done()
         except queue.Empty:
             # Se a fila estiver vazia, atualiza a UI do Tkinter e dorme um pouco.
-            # Isto é essencial para manter a UI responsiva.
             try:
                 root.update()
             except tk.TclError:
@@ -43,25 +41,66 @@ def tk_thread_worker(root, q):
 
 class AreaSelector(tk.Toplevel):
     def __init__(self, master):
-        super().__init__(master); self.attributes('-fullscreen', True); self.attributes('-alpha', 0.3)
-        self.configure(bg='black'); self.rect = None; self.canvas = tk.Canvas(self, cursor="cross", highlightthickness=0)
-        self.canvas.pack(fill="both", expand=True); self.rect_item = None; self.start_x = None; self.start_y = None
-        self.canvas.bind("<ButtonPress-1>", self.on_button_press); self.canvas.bind("<B1-Motion>", self.on_mouse_drag)
-        self.canvas.bind("<ButtonRelease-1>", self.on_button_release); self.bind("<Escape>", lambda e: self.destroy())
+        super().__init__(master)
+        self.attributes('-fullscreen', True)
+        self.attributes('-alpha', 0.3)
+        self.attributes('-topmost', True)
+        self.configure(bg='black')
+        self.rect = None
+        self.canvas = tk.Canvas(self, cursor="cross", highlightthickness=0, bg='black')
+        self.canvas.pack(fill="both", expand=True)
+        self.rect_item = None
+        self.start_x = None
+        self.start_y = None
+        self.canvas.bind("<ButtonPress-1>", self.on_button_press)
+        self.canvas.bind("<B1-Motion>", self.on_mouse_drag)
+        self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
+        self.bind("<Escape>", lambda e: self.destroy())
+        
     def on_button_press(self, event):
-        self.start_x, self.start_y = event.x, event.y; self.rect_item = self.canvas.create_rectangle(self.start_x, self.start_y, self.start_x, self.start_y, outline='red', width=2)
+        self.start_x, self.start_y = event.x, event.y
+        self.rect_item = self.canvas.create_rectangle(self.start_x, self.start_y, self.start_x, self.start_y, outline='cyan', width=2)
+        
     def on_mouse_drag(self, event):
         self.canvas.coords(self.rect_item, self.start_x, self.start_y, event.x, event.y)
+        
     def on_button_release(self, event):
-        x1, y1 = self.start_x, self.start_y; x2, y2 = event.x, event.y
-        self.rect = (min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2)); self.destroy()
+        x1, y1 = self.start_x, self.start_y
+        x2, y2 = event.x, event.y
+        self.rect = (min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2))
+        self.destroy()
 
 class OverlayWindow(tk.Toplevel):
-    def __init__(self, master, style_key='dark', duration_ms=4000):
-        super().__init__(master); style = THEME_STYLES.get(style_key, THEME_STYLES['dark'])
-        self.overrideredirect(True); self.wm_attributes("-topmost", True); self.wm_attributes("-disabled", True)
-        self.wm_attributes("-transparentcolor", "white"); self.configure(bg='white')
-        self.label = tk.Label(self, text="", font=('Arial', 18, 'bold'), fg=style['fg'], bg=style['bg'], wraplength=800, justify="left")
-        self.label.pack(padx=10, pady=5); self.withdraw(); self.after(duration_ms, self.destroy)
+    def __init__(self, master, style_key='dark', duration_ms=5000):
+        super().__init__(master)
+        style = THEME_STYLES.get(style_key, THEME_STYLES['dark'])
+        self.overrideredirect(True)
+        self.wm_attributes("-topmost", True)
+        self.wm_attributes("-disabled", True)
+        # Tenta tornar o fundo da janela transparente (depende do OS)
+        try:
+            self.wm_attributes("-alpha", 0.9)
+        except:
+            pass
+            
+        self.configure(bg=style['bg'])
+        self.label = tk.Label(
+            self, 
+            text="", 
+            font=('Segoe UI', 16, 'bold'), 
+            fg=style['fg'], 
+            bg=style['bg'], 
+            wraplength=600, 
+            justify="center",
+            padx=15,
+            pady=10
+        )
+        self.label.pack()
+        self.withdraw()
+        self.after(duration_ms, self.destroy)
+        
     def show(self, text, x, y):
-        self.label.config(text=text); self.geometry(f"+{int(x-10)}+{int(y-10)}"); self.deiconify()
+        self.label.config(text=text)
+        # Ajusta posição para não sair da tela (simplificado)
+        self.geometry(f"+{int(x)}+{int(y-50)}") 
+        self.deiconify()
